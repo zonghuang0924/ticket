@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>📊 套利歷史紀錄</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    th {
+      background: #a5d6a7;
+    }
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+    .safe {
+      color: green;
+      font-weight: bold;
+    }
+    .warn {
+      color: orange;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1><i class="fa-solid fa-clock-rotate-left"></i> 套利歷史紀錄</h1>
+
+  <table>
+    <tr>
+      <th>時間</th>
+      <th>運動</th>
+      <th>賠率 A</th>
+      <th>賠率 B</th>
+      <th>投注總額</th>
+      <th>A 投注</th>
+      <th>B 投注</th>
+      <th>A 淨利</th>
+      <th>B 淨利</th>
+      <th>結果</th>
+    </tr>
+    {% for row in rows %}
+    <tr>
+      <td>{{ row[0][:19].replace('T', ' ') }}</td>
+      <td>{{ row[1]|capitalize }}</td>
+      <td>{{ row[2] }}</td>
+      <td>{{ row[3] }}</td>
+      <td>{{ row[4] }}</td>
+      <td>{{ row[5] }}</td>
+      <td>{{ row[6] }}</td>
+      <td>{{ row[7] }}</td>
+      <td>{{ row[8] }}</td>
+      <td class="{{ 'safe' if row[9] else 'warn' }}">
+        {{ '✅ 穩賺' if row[9] else '⚠️ 單邊獲利' }}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>

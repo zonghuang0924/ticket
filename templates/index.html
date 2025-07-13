@@ -3,20 +3,114 @@
 <head>
   <meta charset="UTF-8">
   <title>🎯 運彩套利分析系統</title>
-  <link rel="stylesheet" href="/static/style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background: linear-gradient(to bottom right, #e3f2fd, #c8e6c9);
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 30px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      animation: fadeIn 1s ease-in;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+    }
+    label {
+      font-weight: bold;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    input, select, button {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1px solid #aaa;
+    }
+    button {
+      background: #4caf50;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #388e3c;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 1.1rem;
+    }
+    .result.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .result.warning {
+      background: #fff3e0;
+      color: #ef6c00;
+    }
+    .tag {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .error {
+      color: red;
+    }
+    a {
+      text-align: center;
+      display: block;
+      margin-top: 20px;
+      color: #2e7d32;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1><i class="fa-solid fa-chart-line"></i> 運彩套利分析系統</h1>
+
     <form method="POST">
-      <label>選手 A 賠率：</label>
+      <label>選擇運動類型：</label>
+      <select id="sportSelect" name="sport" onchange="loadMatches()" required>
+        {% for s in sports %}
+          <option value="{{ s }}">{{ s|capitalize }}</option>
+        {% endfor %}
+      </select>
+
+      <label>選擇比賽場次：</label>
+      <select id="matchSelect" onchange="updateOdds()">
+        <option value="">請先選擇運動類型</option>
+      </select>
+
+      <label>選手/隊伍 A 賠率：</label>
       <input type="number" step="0.01" name="rA" required>
-      <label>選手 B 賠率：</label>
+      <label>選手/隊伍 B 賠率：</label>
       <input type="number" step="0.01" name="rB" required>
       <label>總投注金額（TWD）：</label>
       <input type="number" name="total" required>
-      <button type="submit"><i class="fa-solid fa-calculator"></i> 開始計算</button>
+      <button type="submit">
+        <i class="fa-solid fa-calculator"></i> 開始計算
+      </button>
     </form>
 
     {% if result == 'error' %}
@@ -30,6 +124,41 @@
         <p class="tag">{{ '✅ 雙邊穩賺套利！' if result.is_safe else '⚠️ 僅單邊獲利' }}</p>
       </div>
     {% endif %}
+
+    <a href="/history"><i class="fa-solid fa-clock-rotate-left"></i> 查看歷史紀錄</a>
   </div>
+
+  <script>
+    let currentMatches = [];
+
+    async function loadMatches() {
+      const sport = document.getElementById("sportSelect").value;
+      const matchSelect = document.getElementById("matchSelect");
+      matchSelect.innerHTML = `<option value="">載入中...</option>`;
+      const res = await fetch(`/get_matches?sport=${sport}`);
+      const matches = await res.json();
+      currentMatches = matches;
+
+      if (matches.length === 0) {
+        matchSelect.innerHTML = `<option value="">無比賽可選</option>`;
+        return;
+      }
+
+      matchSelect.innerHTML = "";
+      matches.forEach((match, index) => {
+        const option = document.createElement("option");
+        option.value = index;
+        option.textContent = `${match.team1} vs ${match.team2}（${match.odds1} : ${match.odds2}）`;
+        matchSelect.appendChild(option);
+      });
+    }
+
+    function updateOdds() {
+      const index = document.getElementById("matchSelect").value;
+      if (!currentMatches[index]) return;
+      document.querySelector('input[name="rA"]').value = currentMatches[index].odds1;
+      document.querySelector('input[name="rB"]').value = currentMatches[index].odds2;
+    }
+  </script>
 </body>
 </html>
