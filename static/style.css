@@ -1,0 +1,78 @@
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: linear-gradient(to bottom right, #e8f5e9, #c8e6c9);
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 30px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+  animation: fadeIn 1s ease-in;
+}
+
+h1 {
+  text-align: center;
+  color: #388e3c;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+input, button {
+  padding: 10px;
+  border: 1px solid #aaa;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+button {
+  background: #66bb6a;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+button:hover {
+  background: #388e3c;
+}
+
+.result {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+}
+
+.result.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.result.warning {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.error {
+  color: red;
+  margin-top: 10px;
+}
+
+.tag {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(20px);}
+  to {opacity: 1; transform: translateY(0);}
+}
